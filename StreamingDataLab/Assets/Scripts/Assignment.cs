@@ -122,7 +122,7 @@ static public class AssignmentPart1
 //  This will enable the needed UI/function calls for your to proceed with your assignment.
 static public class AssignmentConfiguration
 {
-    public const int PartOfAssignmentThatIsInDevelopment = 1;
+    public const int PartOfAssignmentThatIsInDevelopment = 2;
 }
 
 /*
@@ -151,6 +151,10 @@ Good luck, journey well.
 
 static public class AssignmentPart2
 {
+    public const string PartyMetaFile = "PartyIndicesAndNames.txt"; // okay
+
+    private static LinkedList<PartySaveData> parties;
+    private static uint lastUsedIndex;
 
     static public void GameStart()
     {
