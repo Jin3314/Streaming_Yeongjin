@@ -161,35 +161,118 @@ static public class AssignmentPart2
 
         GameContent.RefreshUI();
 
+        LoadPartyMetaData();
+
+        Debug.Log("start");
+
     }
 
     static public List<string> GetListOfPartyNames()
     {
-        return new List<string>() {
-            "sample 1",
-            "sample 2",
-            "sample 3"
-        };
+
+        if (parties == null)
+            return new List<string>();
+
+        List<string> pNames = new List<string>();
+
+        foreach (PartySaveData psd in parties)
+        {
+            pNames.Add(psd.name);
+        }
+
+        return pNames;
 
     }
 
     static public void LoadPartyDropDownChanged(string selectedName)
     {
+
+        foreach (PartySaveData psd in parties)
+        {
+            if (selectedName == psd.name)
+                psd.LoadParty();
+        }
+
         GameContent.RefreshUI();
+        Debug.Log("l " + selectedName);
+
     }
 
     static public void SavePartyButtonPressed()
     {
+        lastUsedIndex++;
+        PartySaveData p = new PartySaveData(lastUsedIndex, GameContent.GetPartyNameFromInput());
+        parties.AddLast(p);
+
+        SavePartyMetaData();
+
+        p.SaveParty();
+
         GameContent.RefreshUI();
+        Debug.Log("s");
+
     }
 
     static public void NewPartyButtonPressed()
     {
-
+        Debug.Log("n");
     }
 
     static public void DeletePartyButtonPressed()
     {
+        Debug.Log("d");
+    }
+
+
+    static public void SavePartyMetaData()
+    {
+        StreamWriter sw = new StreamWriter(Application.dataPath + Path.DirectorySeparatorChar + PartyMetaFile);
+
+
+        sw.WriteLine("1," + lastUsedIndex);
+
+
+        foreach (PartySaveData pData in parties)
+        {
+            sw.WriteLine("2," + pData.index + "," + pData.name);
+        }
+
+        sw.Close();
+
+    }
+
+    static public void LoadPartyMetaData()
+    {
+        parties = new LinkedList<PartySaveData>();
+
+        string path = Application.dataPath + Path.DirectorySeparatorChar + PartyMetaFile;
+
+        if (File.Exists(path))
+        {
+            string line = "";
+            StreamReader sr = new StreamReader(path);
+
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] csv = line.Split(',');
+
+                //if(int.Parse(csv[0]))
+
+                int saveDataSignifier = int.Parse(csv[0]);
+
+                if (saveDataSignifier == 1)
+                    lastUsedIndex = uint.Parse(csv[1]);
+                else if (saveDataSignifier == 2)
+                    parties.AddLast(new PartySaveData(uint.Parse(csv[1]), csv[2]));
+
+
+            }
+
+            sr.Close();
+        }
+
+
+
 
     }
 
